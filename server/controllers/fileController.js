@@ -1,7 +1,9 @@
+
 import File from '../models/File.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import cloudinary from '../config/cloudinary.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,6 +41,27 @@ export const uploadFile = async (req, res, next) => {
       });
     }
 
+    // Upload file to Cloudinary
+    let cloudinaryResult;
+    try {
+      cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
+        resource_type: 'raw',
+        folder: 'codeshub_uploads',
+        use_filename: true,
+        unique_filename: false
+      });
+    } catch (cloudErr) {
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      return res.status(500).json({ success: false, message: 'Cloud upload failed', error: cloudErr.message });
+    }
+
+    // Remove local file after upload
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
     const file = await File.create({
       semester: parseInt(semester),
       subject,
@@ -46,14 +69,9 @@ export const uploadFile = async (req, res, next) => {
       questionNo: parseInt(questionNo),
       questionText: questionText || '',
       description: description || '',
-      fileName: req.file.filename,
-      filePath: req.file.path
+      fileName: req.file.originalname,
+      fileUrl: cloudinaryResult.secure_url
     });
-
-    // Remove the file from uploads after saving to DB
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
 
     res.status(201).json({
       success: true,
@@ -168,24 +186,26 @@ export const getFileContent = async (req, res, next) => {
       });
     }
 
-    const filePath = path.resolve(file.filePath);
-
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({
-        success: false,
-        message: 'File does not exist on server'
-      });
-    }
-
-    const content = fs.readFileSync(filePath, 'utf-8');
-
-    res.status(200).json({
-      success: true,
-      data: {
-        content,
-        fileName: file.fileName
+    // Fetch file content from Cloudinary URL
+    try {
+      const response = await fetch(file.fileUrl);
+      if (!response.ok) {
+        return res.status(404).json({
+          success: false,
+          message: 'File does not exist on Cloudinary'
+        });
       }
-    });
+      const content = await response.text();
+      res.status(200).json({
+        success: true,
+        data: {
+          content,
+          fileName: file.fileName
+        }
+      });
+    } catch (err) {
+      return res.status(500).json({ success: false, message: 'Failed to fetch file from Cloudinary', error: err.message });
+    }
   } catch (error) {
     next(error);
   }
