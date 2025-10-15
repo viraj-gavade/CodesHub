@@ -50,6 +50,11 @@ export const uploadFile = async (req, res, next) => {
       filePath: req.file.path
     });
 
+    // Remove the file from uploads after saving to DB
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
     res.status(201).json({
       success: true,
       data: file

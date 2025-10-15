@@ -16,6 +16,7 @@ const CodesPage = () => {
   const [filters, setFilters] = useState({
     semester: '',
     subject: '',
+    practicalNo: '',
     search: '',
   });
 
@@ -26,7 +27,10 @@ const CodesPage = () => {
   const fetchFiles = async (customFilters = {}) => {
     setLoading(true);
     try {
-      const response = await fileAPI.getFiles(customFilters);
+      // Only send practicalNo if present
+      const params = { ...customFilters };
+      if (!params.practicalNo) delete params.practicalNo;
+      const response = await fileAPI.getFiles(params);
       setFiles(response.data);
     } catch (err) {
       setError('Failed to fetch files');
@@ -86,7 +90,7 @@ const CodesPage = () => {
             <Filter className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-cyan-500" />
             Filter & Search
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <select
               name="semester"
               value={filters.semester}
@@ -107,6 +111,16 @@ const CodesPage = () => {
               value={filters.subject}
               onChange={handleFilterChange}
               placeholder="Filter by subject"
+              className="px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            />
+
+            <input
+              type="number"
+              name="practicalNo"
+              value={filters.practicalNo}
+              onChange={handleFilterChange}
+              placeholder="Practical No"
+              min="1"
               className="px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             />
 

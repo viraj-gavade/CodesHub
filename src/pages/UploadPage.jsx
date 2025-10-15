@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Upload, FileCode, Check, AlertCircle, BookOpen, Hash, FileText } from 'lucide-react';
 import { fileAPI } from '../services/api';
 
 const UploadPage = () => {
+  const navigate = useNavigate();
   const [uploadLoading, setUploadLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
@@ -38,7 +40,7 @@ const UploadPage = () => {
     data.append('subject', formData.subject);
     data.append('practicalNo', formData.practicalNo);
     data.append('questionNo', formData.questionNo);
-  data.append('questionText', formData.question);
+    data.append('questionText', formData.question);
     data.append('description', formData.description);
     data.append('file', formData.file);
 
@@ -56,6 +58,10 @@ const UploadPage = () => {
       });
       const fileInput = document.getElementById('file-input');
       if (fileInput) fileInput.value = '';
+      // Show success, then auto-redirect to main page after short delay
+      setTimeout(() => {
+        navigate('/');
+      }, 1200); // 1.2 seconds for user to see success
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to upload file');
     } finally {
