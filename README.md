@@ -108,7 +108,7 @@
 ---
 
 ### 📁 Folders Page
-![Folders Page](./src/images/Code%20Folders%20Page.pngg)
+![Folders Page](./src/images/Code_Folders_Page.png)
 *Organized folder structure for easy resource browsing*
 
 </div>
