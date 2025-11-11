@@ -8,11 +8,8 @@ const api = axios.create({
 
 export const fileAPI = {
   uploadFile: async (formData) => {
-    const response = await api.post('/files/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    // Don't set Content-Type manually - let axios set it with the boundary
+    const response = await api.post('/files/upload', formData);
     return response.data;
   },
 
@@ -47,11 +44,8 @@ export const fileAPI = {
 
 export const resourceAPI = {
   uploadResource: async (formData) => {
-    const response = await api.post('/resources/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    // Don't set Content-Type manually - let axios set it with the boundary
+    const response = await api.post('/resources/upload', formData);
     return response.data;
   },
 

@@ -13,6 +13,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
     "axios": "^1.12.2",
+    "cloudinary": "^2.8.0",
+    "formidable": "^3.5.4",
     "lucide-react": "^0.344.0",
     "mongoose": "^8.19.1",
     "prismjs": "^1.30.0",
