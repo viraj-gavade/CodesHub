@@ -1,7 +1,7 @@
 import formidable from 'formidable';
 import fs from 'fs';
 import mongoose from 'mongoose';
-import { connectToDatabase } from '../../_db.js';
+import { connectToDatabase } from '../_db.js';
 import cloudinary from '../../../server/config/cloudinary.js';
 
 export const config = {
