@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { connectToDatabase } from '../_db.js';
+import { connectToDatabase } from './_db.js';
 
 const fileSchema = new mongoose.Schema({
   semester: Number,
